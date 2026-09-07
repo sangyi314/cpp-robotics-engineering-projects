@@ -1,7 +1,7 @@
-cmake_minimum_required (3.16)
+cmake_minimum_required (VERSION 3.28)
 
 project (robot_data_pipeline
-    VERISON 1.0
+    VERSION 1.0
     LANGUAGES CXX
 )
 
