@@ -1,0 +1,5 @@
+cpp-multithreaded-robot-data-pipeline/build/
+*.o
+*.out
+*.exe
+*.log
