@@ -1,3 +1,0 @@
-/home/sam/cpp-robotics-engineering-projects/cpp-multithreaded-robot-data-pipeline/build/CMakeFiles/robot_pipeline.dir
-/home/sam/cpp-robotics-engineering-projects/cpp-multithreaded-robot-data-pipeline/build/CMakeFiles/edit_cache.dir
-/home/sam/cpp-robotics-engineering-projects/cpp-multithreaded-robot-data-pipeline/build/CMakeFiles/rebuild_cache.dir

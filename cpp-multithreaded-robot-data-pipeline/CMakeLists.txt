@@ -12,3 +12,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(robot_pipeline
     src/main.cpp
 )
+
+target_include_directories(robot_pipeline
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)

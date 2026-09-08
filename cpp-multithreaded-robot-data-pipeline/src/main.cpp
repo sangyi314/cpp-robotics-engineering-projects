@@ -1,7 +1,15 @@
 #include <iostream>
 
+#include "sensor_data.hpp"
+
 int main()
 {
-    std::cout << "Hello, World!" << '\n';
+    SensorData data;
+    data.type = SensorType::IMU ;
+    data.timestamp = 1000 ;
+
+    data.imu.ax = 0.1 ;
+
+    std::cout << "The timestamp of IMU is " << data.timestamp << '\n';
     return 0;
 }
