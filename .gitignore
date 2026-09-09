@@ -17,3 +17,7 @@ compile_commands.json
 *.out
 *.exe
 *.log
+
+# .vscode
+
+.vscode/
