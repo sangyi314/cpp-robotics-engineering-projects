@@ -29,7 +29,7 @@ The main goals of this project series are:
 
 ### Programming
 
-- C++20
+- C++23
 - STL
 - Modern C++ features
 - Object-Oriented Programming

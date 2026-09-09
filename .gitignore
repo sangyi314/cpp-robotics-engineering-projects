@@ -8,10 +8,6 @@ CMakeCache.txt
 cmake_install.cmake
 compile_commands.json
 
-# Generated files from this project's in-source build
-/cpp-multithreaded-robot-data-pipeline/Makefile
-/cpp-multithreaded-robot-data-pipeline/robot_pipeline
-
 # Compiled files and logs
 *.o
 *.out
