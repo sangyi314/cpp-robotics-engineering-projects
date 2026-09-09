@@ -13,6 +13,7 @@ find_package(Threads REQUIRED)
 
 add_executable(robot_pipeline
     src/main.cpp
+    src/sensor_simulator.cpp
 )
 
 target_include_directories(robot_pipeline

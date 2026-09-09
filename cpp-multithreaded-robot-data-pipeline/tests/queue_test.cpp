@@ -3,7 +3,7 @@
 #include <optional>
 #include <thread>
 
-#include "thread-safe-queue.hpp"
+#include "thread_safe_queue.hpp"
 
 bool test_fifo_and_close()
 {
