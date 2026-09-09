@@ -24,6 +24,7 @@ struct IMUData
 struct SensorData
 {
     SensorType type;
-    std::uint64_t timestamp;
+    std::uint64_t sequnence {};
+    std::uint64_t timestamp_us {};
     IMUData imu;
 };
