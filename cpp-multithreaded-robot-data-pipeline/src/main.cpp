@@ -33,7 +33,8 @@ int main()
                   << " time_us= " << data -> raw.timestamp_us
                   << " ax= " << data -> raw.imu.ax
                   << " ay= " << data -> raw.imu.ay
-                  << " az= " << data -> raw.imu.az << '\n';
+                  << " az= " << data -> raw.imu.az 
+                  << " filtered_ax=   " << data->filtered_ax << '\n';
 
         received_count ++;
 

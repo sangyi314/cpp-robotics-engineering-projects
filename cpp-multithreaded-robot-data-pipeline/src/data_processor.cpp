@@ -17,26 +17,26 @@ void run_data_processer(ThreadSafeQueue<SensorData>& input , ThreadSafeQueue<Pro
 
        if (window.size() > window_size)
        {
-            sum -= window.front();
-            window.pop();
+          sum -= window.front();
+          window.pop();
        }
 
        ProcessedData result ;
        result.raw = *data ;
 
-       result.filtered_ax = sum / static_cast<double>(window_size);
+       result.filtered_ax = sum / static_cast<double>(window.size());
 
        if (!output.push(result))
        {
-            break;
+          break;
        }
 
-       output.close();
+     
 
-    }
+     }
 
 
-
+     output.close();
 
 
 
