@@ -38,12 +38,12 @@ int main()
         return 1;
     }
 
-    ThreadSafeQueue<SensorData> raw_queue ;
-    ThreadSafeQueue<ProcessedData> processed_queue ;
+    ThreadSafeQueue<SensorData> raw_queue {5};
+    ThreadSafeQueue<ProcessedData> processed_queue {5};
     SensorSimulatorConfig config ;
 
     config.sample_count = 20;
-    config.sample_interval = std::chrono::milliseconds{100};
+    config.sample_interval = std::chrono::milliseconds{10};
 
     std::thread processer([&raw_queue , &processed_queue]{
         run_data_processer(raw_queue , processed_queue);
