@@ -52,3 +52,29 @@ add_test(
 set_tests_properties(queue_test
     PROPERTIES TIMEOUT 5
 )
+
+add_executable(pipeline_test
+    tests/pipeline_test.cpp
+    src/sensor_simulator.cpp
+    src/data_processor.cpp
+    src/csv_logger.cpp
+)
+
+target_include_directories(pipeline_test
+    PRIVATE
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(pipeline_test
+    PRIVATE
+        Threads::Threads
+)
+
+add_test(
+    NAME pipeline_test
+    COMMAND pipeline_test
+)
+
+set_tests_properties(pipeline_test
+    PROPERTIES TIMEOUT 10
+)
