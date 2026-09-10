@@ -17,3 +17,7 @@ compile_commands.json
 # .vscode
 
 .vscode/
+
+#log
+
+/output/

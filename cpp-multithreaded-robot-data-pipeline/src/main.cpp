@@ -2,13 +2,42 @@
 #include <chrono>
 #include <thread>
 #include <cstdint>
+#include <fstream>
+#include <filesystem>
+#include <system_error>
 
 #include "sensor_simulator.hpp"
 #include "data_processor.hpp"
 #include "processed_data.hpp"
+#include "csv_logger.hpp"
 
 int main()
 {
+    const std::filesystem::path output_path{"output/imu_data.csv"};
+
+    std::error_code error;
+    std::filesystem::create_directories(output_path.parent_path() , error);
+
+    if(error)
+    {
+        std::cerr << "Cannot create output directory: " << error.message() << '\n';
+        return 1;
+    }
+
+    std::ofstream csv(output_path , std::ios::out | std::ios::trunc);
+
+    if(!csv)
+    {
+        std::cerr << "Cannot open CSV: " << output_path << '\n';
+        return 1;
+    }
+
+    if(!write_csv_header(csv))
+    {
+         std::cerr << "Cannot write CSV header\n";
+        return 1;
+    }
+
     ThreadSafeQueue<SensorData> raw_queue ;
     ThreadSafeQueue<ProcessedData> processed_queue ;
     SensorSimulatorConfig config ;
@@ -26,6 +55,8 @@ int main()
     });
 
     std::uint64_t received_count {0};
+    std::uint64_t written_count {0};
+    bool csv_ok {true};
 
     while(auto data = processed_queue.pop())
     {
@@ -38,12 +69,37 @@ int main()
 
         received_count ++;
 
+        if(csv_ok)
+        {
+            csv_ok = write_csv_row(csv , *data);
+
+            if(csv_ok)
+            {
+                written_count++;
+            }
+        }
     }
     processer.join();
     producer.join();
 
+    csv.close();
+    if(!csv)
+    {
+        csv_ok = false ;
+    }
+
     std::cout << "Received " << received_count
               << " / " << config.sample_count << " samples\n";
 
-    return received_count == config.sample_count ? 0 : 1;
+    if (!csv_ok) {
+        std::cerr
+            << "CSV write or close failed; file may be incomplete\n";
+        return 1;
+    }
+
+    std::cout << "Saved " << written_count
+              << " rows to " << output_path << '\n';
+
+    return received_count == config.sample_count
+        && written_count == received_count ? 0 : 1;
 }

@@ -15,6 +15,7 @@ add_executable(robot_pipeline
     src/main.cpp
     src/sensor_simulator.cpp
     src/data_processor.cpp
+    src/csv_logger.cpp
 )
 
 target_include_directories(robot_pipeline
