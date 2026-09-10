@@ -13,6 +13,7 @@
 
 int main()
 {
+    
     const std::filesystem::path output_path{"output/imu_data.csv"};
 
     std::error_code error;
@@ -37,6 +38,8 @@ int main()
          std::cerr << "Cannot write CSV header\n";
         return 1;
     }
+
+    const auto pipeline_start = std::chrono::steady_clock::now();
 
     ThreadSafeQueue<SensorData> raw_queue {5};
     ThreadSafeQueue<ProcessedData> processed_queue {5};
@@ -83,6 +86,9 @@ int main()
     producer.join();
 
     csv.close();
+
+    const auto pipeline_end = std::chrono::steady_clock::now();
+
     if(!csv)
     {
         csv_ok = false ;
@@ -99,6 +105,23 @@ int main()
 
     std::cout << "Saved " << written_count
               << " rows to " << output_path << '\n';
+
+    const double elapsed_s = std::chrono::duration<double>(
+    pipeline_end - pipeline_start).count();
+
+    const double rate = elapsed_s > 0.0
+    ? static_cast<double>(written_count) / elapsed_s
+    : 0.0;
+
+    const auto raw_stats = raw_queue.stats();
+    const auto processed_stats = processed_queue.stats();
+
+    std::cout << "Elapsed: " << elapsed_s << " s\n"
+            << "Rate: " << rate << " samples/s\n"
+            << "Raw queue: peak=" << raw_stats.peak_size
+            << ", push_waits=" << raw_stats.push_wait_count << '\n'
+            << "Processed queue: peak=" << processed_stats.peak_size
+            << ", push_waits=" << processed_stats.push_wait_count << '\n';
 
     return received_count == config.sample_count
         && written_count == received_count ? 0 : 1;

@@ -5,6 +5,13 @@
 #include <mutex>
 #include <optional>
 #include <stdexcept>
+#include <cstdint>
+
+struct QueueStats
+{
+    std::size_t peak_size {};
+    std::uint64_t push_wait_count {};
+};
 
 template <typename T>
 
@@ -13,6 +20,7 @@ class ThreadSafeQueue
     private :
         std::queue<T> m_queue ;
         std::mutex m_mutex;
+        QueueStats m_stats ;
 
         std::condition_variable m_not_empty ;
         std::condition_variable m_not_full;
@@ -35,6 +43,11 @@ class ThreadSafeQueue
             {
                 std::unique_lock<std::mutex> lock(m_mutex);
 
+                if(!m_closed && m_queue.size() < m_capacity)
+                {
+                    m_stats.push_wait_count++;
+                }
+
                 m_not_full.wait(lock,[this]{
                     return m_closed || m_queue.size() < m_capacity ;
                 });
@@ -44,6 +57,11 @@ class ThreadSafeQueue
                     return false;
                 }
                 m_queue.push (value);
+
+                if (m_queue.size() > m_stats.peak_size) 
+                {
+                    m_stats.peak_size = m_queue.size();
+                }
             }
             m_not_empty.notify_one();
             return true;
@@ -73,5 +91,11 @@ class ThreadSafeQueue
             }
             m_not_empty.notify_all();
             m_not_full.notify_all();
+        }
+
+        QueueStats stats()
+        {   
+            std::lock_guard<std::mutex> lock(m_mutex);
+            return m_stats;
         }
 };
