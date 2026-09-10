@@ -4,34 +4,41 @@
 #include <cstdint>
 
 #include "sensor_simulator.hpp"
+#include "data_processor.hpp"
+#include "processed_data.hpp"
 
 int main()
 {
-    ThreadSafeQueue<SensorData> queue;
+    ThreadSafeQueue<SensorData> raw_queue ;
+    ThreadSafeQueue<ProcessedData> processed_queue ;
     SensorSimulatorConfig config ;
 
     config.sample_count = 20;
     config.sample_interval = std::chrono::milliseconds{100};
 
-    std::thread producer([&queue , config]{
-        run_sensor_simulator(queue , config);
+    std::thread processer([&raw_queue , &processed_queue]{
+        run_data_processer(raw_queue , processed_queue);
+    });
+
+    std::thread producer([&raw_queue , config]{
+        run_sensor_simulator(raw_queue , config);
 
     });
 
     std::uint64_t received_count {0};
 
-    while(auto data = queue.pop())
+    while(auto data = processed_queue.pop())
     {
-        std::cout << "seq= " << data -> sequence
-                  << " time_us= " << data -> timestamp_us
-                  << " ax= " << data -> imu.ax
-                  << " ay= " << data -> imu.ay
-                  << " az= " << data -> imu.az << '\n';
+        std::cout << "seq= " << data -> raw.sequence
+                  << " time_us= " << data -> raw.timestamp_us
+                  << " ax= " << data -> raw.imu.ax
+                  << " ay= " << data -> raw.imu.ay
+                  << " az= " << data -> raw.imu.az << '\n';
 
         received_count ++;
 
     }
-
+    processer.join();
     producer.join();
 
     std::cout << "Received " << received_count
