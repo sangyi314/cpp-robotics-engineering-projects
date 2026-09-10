@@ -6,6 +6,7 @@
 #include <optional>
 #include <stdexcept>
 #include <cstdint>
+#include <chrono>
 
 struct QueueStats
 {
@@ -43,7 +44,7 @@ class ThreadSafeQueue
             {
                 std::unique_lock<std::mutex> lock(m_mutex);
 
-                if(!m_closed && m_queue.size() < m_capacity)
+                if(!m_closed && m_queue.size() >= m_capacity)
                 {
                     m_stats.push_wait_count++;
                 }
@@ -79,6 +80,8 @@ class ThreadSafeQueue
             m_queue.pop();
 
             lock.unlock();
+
+            m_not_full.notify_one();
             return value;
         }
 
