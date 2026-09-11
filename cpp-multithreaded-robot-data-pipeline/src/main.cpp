@@ -5,15 +5,40 @@
 #include <fstream>
 #include <filesystem>
 #include <system_error>
+#include <exception>
 
 #include "sensor_simulator.hpp"
 #include "data_processor.hpp"
 #include "processed_data.hpp"
 #include "csv_logger.hpp"
+#include "pipeline_options.hpp"
 
-int main()
+int main(int argc , char* argv[])
 {
-    
+    PipelineOptions options;
+
+    try
+    {
+        options = parse_options(argc , argv);
+    }
+    catch(const std::exception& error)
+    {
+        std::cerr << "Error: " << error.what()
+                  << "\nUse --help for usage.\n";
+                  return 1;
+    }
+
+    if (options.show_help) 
+    {
+        std::cout
+            << "Usage: robot_pipeline [options]\n"
+            << "  --samples N             Default: 20\n"
+            << "  --interval-ms N         Default: 10\n"
+            << "  --capacity N            Default: 5; must be > 0\n"
+            << "  --consumer-delay-ms N   Default: 0\n";
+        return 0;
+    }
+
     const std::filesystem::path output_path{"output/imu_data.csv"};
 
     std::error_code error;
@@ -41,12 +66,12 @@ int main()
 
     const auto pipeline_start = std::chrono::steady_clock::now();
 
-    ThreadSafeQueue<SensorData> raw_queue {5};
-    ThreadSafeQueue<ProcessedData> processed_queue {5};
+    ThreadSafeQueue<SensorData> raw_queue {options.queue_capacity};
+    ThreadSafeQueue<ProcessedData> processed_queue {options.queue_capacity};
     SensorSimulatorConfig config ;
 
-    config.sample_count = 20;
-    config.sample_interval = std::chrono::milliseconds{10};
+    config.sample_count = options.sample_count;
+    config.sample_interval = options.sample_interval;
 
     std::thread processer([&raw_queue , &processed_queue]{
         run_data_processer(raw_queue , processed_queue);
@@ -81,6 +106,7 @@ int main()
                 written_count++;
             }
         }
+        std::this_thread::sleep_for(options.consumer_delay);
     }
     processer.join();
     producer.join();
