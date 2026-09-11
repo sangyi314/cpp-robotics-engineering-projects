@@ -46,7 +46,7 @@ PipelineOptions parse_options(int argc, char* argv[])
             return options ;
         }
 
-        if (key != "--samples" && key != "intevals_ms"  && key != "--capacity" && key != "--consumer-delay-ms")
+        if (key != "--samples" && key != "--interval-ms"  && key != "--capacity" && key != "--consumer-delay-ms")
         {
             throw std::invalid_argument ("Unknown option: " + std::string(key));
         }

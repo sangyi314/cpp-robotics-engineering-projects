@@ -79,3 +79,12 @@ add_test(
 set_tests_properties(pipeline_test
     PROPERTIES TIMEOUT 10
 )
+
+add_test(
+    NAME cli_interval_test
+    COMMAND robot_pipeline --samples 0 --interval-ms 0
+)
+
+set_tests_properties(cli_interval_test
+    PROPERTIES TIMEOUT 5
+)
