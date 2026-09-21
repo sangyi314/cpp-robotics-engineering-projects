@@ -10,10 +10,13 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(robot_sim
     src/main.cpp
+    src/differential_drive.cpp
+    src/motion_model.cpp
     )
 
 target_include_directories(robot_sim
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/include)
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        )
 
 
